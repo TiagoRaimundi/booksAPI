@@ -1,25 +1,35 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from 'react';
+import api from './api';
 
-function App() {
+const BuscaLivros = () => {
+  const [termo, setTermo] = useState('');
+  const [livros, setLivros] = useState([]);
+
+  const pesquisarLivros = async () => {
+    try {
+      const response = await api.get(`/volumes?q=${termo}`);
+      setLivros(response.data.items);
+    } catch (error) {
+      console.error("Erro ao buscar livros:", error);
+    }
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <input 
+        type="text" 
+        value={termo}
+        onChange={(e) => setTermo(e.target.value)}
+      />
+      <button onClick={pesquisarLivros}>Buscar</button>
+
+      {livros.map(livro => (
+        <div key={livro.id}>
+          {livro.volumeInfo.title}
+        </div>
+      ))}
     </div>
   );
-}
+};
 
-export default App;
+export default BuscaLivros;
